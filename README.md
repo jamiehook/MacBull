@@ -63,6 +63,33 @@ To produce a distributable disk image like the one on the Releases page, run
 To start already caffeinated (handy with *Launch at login*), set
 `MACBULL_AUTOSTART=1` in the environment.
 
+## Releasing
+
+Releases are built and published automatically by GitHub Actions
+([`.github/workflows/release.yml`](.github/workflows/release.yml)) — there is no
+manual upload step. To cut a release, tag a version and push the tag:
+
+```sh
+git tag v1.2.0
+git push origin v1.2.0
+```
+
+On a `v*` tag push, CI runs on a full-Xcode macOS runner, stamps the version into
+`Info.plist` from the tag, builds a **universal** (Apple Silicon + Intel) `.dmg`,
+and publishes a GitHub release with it attached. (Running the workflow manually
+from the Actions tab builds the same DMG but only uploads it as an artifact, for
+testing — it doesn't publish a release.)
+
+Conventions:
+
+- **User-facing changes get a version bump** (roughly [SemVer](https://semver.org)):
+  a new capability bumps the minor version — e.g. adding Intel support was
+  `1.0.0` → `1.1.0` — and fixes bump the patch version.
+- **Never mutate an already-published release.** Its bytes shouldn't change after
+  people may have downloaded them; ship a new version instead.
+- The **git tag is the source of truth** for the version, so you don't have to edit
+  `Info.plist` by hand (keeping it in sync is fine, but CI overwrites it from the tag).
+
 ## The icons
 
 All artwork is generated from code — no binary assets to hand-edit.
