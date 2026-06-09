@@ -5,6 +5,7 @@ import AppKit
 /// view maps to a native menu item (Toggles get checkmarks, Pickers get radios).
 struct MenuContent: View {
     @ObservedObject var controller: CaffeinateController
+    @ObservedObject var claudeMonitor: ClaudeSessionMonitor
 
     var body: some View {
         Text(controller.statusText)
@@ -38,6 +39,23 @@ struct MenuContent: View {
             }
             .pickerStyle(.inline)
             .labelsHidden()
+        }
+
+        Divider()
+
+        Menu(claudeMonitor.summaryLabel) {
+            if claudeMonitor.sessions.isEmpty {
+                Text("No active sessions")
+            }
+            ForEach(claudeMonitor.sessions) { session in
+                Button("\(session.projectName) — \(session.stateLabel)") {
+                    NSWorkspace.shared.open(
+                        URL(fileURLWithPath: session.workingDirectory, isDirectory: true))
+                }
+                .help(session.workingDirectory)
+            }
+            Divider()
+            Button("Refresh") { claudeMonitor.refresh() }
         }
 
         Divider()

@@ -36,6 +36,7 @@ it runs natively on both Apple Silicon and Intel Macs.
 | Prevent system sleep on AC | `-s` | No system sleep while on power |
 | Keep display awake | `-u` | Declares the user active / turns display on |
 | Duration | `-t` | No limit, or 15 min – 8 hours |
+| Claude Code | — | Lists your running Claude Code CLI sessions |
 | Launch at login | — | Auto-start at login (via `SMAppService`) |
 | Quit MacBull (⌘Q) | — | Release everything and exit |
 
@@ -46,6 +47,23 @@ releases sleep entirely. Selections are remembered between launches.
 The spawned `caffeinate` process is launched with `-w <app-pid>`, so it always
 releases its power assertion and exits when the app does — even on a crash or
 force-quit. Your Mac can't get stuck awake.
+
+## Claude Code sessions
+
+The **Claude Code** submenu shows every [Claude Code](https://code.claude.com)
+CLI session currently running on the machine — one line per session with the
+project name and its state:
+
+- **working…** — the session wrote to its transcript within the last 30
+  seconds, so Claude is actively doing something.
+- **idle · 5m ago** — the session is open but waiting, with the time since it
+  last did anything.
+
+Clicking a session opens its project folder in Finder. The list refreshes every
+10 seconds (or on demand via **Refresh**). Detection covers both the standalone
+`claude` binary and npm installs run through node; activity is read from the
+transcript files Claude Code keeps under `~/.claude/projects/`. Everything is
+read-only — MacBull never touches the sessions themselves.
 
 ## Build it yourself
 

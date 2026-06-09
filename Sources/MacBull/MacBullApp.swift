@@ -4,10 +4,11 @@ import AppKit
 @main
 struct MacBullApp: App {
     @StateObject private var controller = CaffeinateController()
+    @StateObject private var claudeMonitor = ClaudeSessionMonitor()
 
     var body: some Scene {
         MenuBarExtra {
-            MenuContent(controller: controller)
+            MenuContent(controller: controller, claudeMonitor: claudeMonitor)
         } label: {
             // Raging bull (snorting) while awake; sleeping bull (with a "z")
             // while sleep is allowed.
