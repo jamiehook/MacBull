@@ -1,0 +1,55 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]          # pushing e.g. v1.1.0 builds + publishes a release
+  workflow_dispatch: {}    # manual run: builds + uploads the DMG as an artifact only
+
+permissions:
+  contents: write          # lets the built-in token create the release
+
+jobs:
+  release:
+    runs-on: macos-15      # full Xcode + universal SDK (enables the x86_64 slice)
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Stamp version from tag
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            V="${GITHUB_REF_NAME#v}"
+            /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $V" Info.plist
+            echo "Stamped version $V from tag $GITHUB_REF_NAME"
+          else
+            echo "Manual run — using Info.plist version $(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' Info.plist)"
+          fi
+
+      - name: Build universal .dmg
+        run: ./package.sh
+
+      - name: Assert the binary is universal
+        run: |
+          BIN="build/MacBull.app/Contents/MacOS/MacBull"
+          archs="$(lipo -archs "$BIN")"
+          echo "archs: $archs"
+          [[ "$archs" == *arm64* && "$archs" == *x86_64* ]] \
+            || { echo "::error::expected a universal binary, got: $archs"; exit 1; }
+
+      - name: Upload artifact (manual runs)
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: MacBull-dmg
+          path: |
+            build/MacBull-*.dmg
+            build/ReleaseInfo.json
+          if-no-files-found: error
+
+      - name: Publish release (tag pushes)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            build/MacBull-*.dmg
+            build/ReleaseInfo.json
+          generate_release_notes: true

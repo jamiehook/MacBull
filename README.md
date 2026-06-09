@@ -1,5 +1,7 @@
 # MacBull 🐂
 
+[![Release](https://github.com/jamiehook/MacBull/actions/workflows/release.yml/badge.svg)](https://github.com/jamiehook/MacBull/actions/workflows/release.yml)
+
 A macOS menu-bar app that wraps the built-in `/usr/bin/caffeinate` command, so you
 can toggle each sleep-prevention mode with a click instead of remembering flags.
 
