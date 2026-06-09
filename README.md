@@ -22,8 +22,8 @@ and drag **MacBull** onto the Applications folder.
 The app is ad-hoc signed (not notarized with an Apple Developer ID), so the first
 time you launch it macOS Gatekeeper will block it. To open it once: **right-click
 the app → Open** and confirm — or allow it under *System Settings → Privacy &
-Security*. After that it launches normally. Release builds are Apple Silicon only;
-Intel Macs can build from source (below).
+Security*. After that it launches normally. The download is a universal build, so
+it runs natively on both Apple Silicon and Intel Macs.
 
 ## Menu
 
